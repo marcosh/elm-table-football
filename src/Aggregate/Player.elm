@@ -1,8 +1,10 @@
 module Player exposing (..)
 
+import Uuid exposing (Uuid)
+
 
 type alias PlayerId =
-    Int
+    Uuid
 
 
 type alias PlayerName =

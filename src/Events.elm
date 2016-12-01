@@ -7,7 +7,7 @@ import Tournament exposing (..)
 
 type Event
     = TeamWasCreated TeamName
-    | PlayerWasCreated PlayerName
+    | PlayerWasCreated PlayerName PlayerId
     | PlayerWasAddedToTeam Player Team
     | TournamentWasCreated TournamentName Rounds
     | TeamWasAddedToTournament Team Tournament
