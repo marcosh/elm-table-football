@@ -1,4 +1,4 @@
-module TableFootballView exposing (..)
+module TableFootballUI exposing (..)
 
 import TableFootballApp as App exposing (..)
 import Html exposing (Html, div, input, button, text)

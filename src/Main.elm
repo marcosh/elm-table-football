@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (program, Html, text, div, input, button)
-import TableFootballView as TF exposing (..)
+import TableFootballUI as TF exposing (..)
 
 
 main : Program Never Model Msg
