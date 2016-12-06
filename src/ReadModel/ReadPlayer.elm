@@ -8,3 +8,8 @@ type alias Player =
     , name : PlayerName
     , goalsScored : Int
     }
+
+
+newPlayer : PlayerId -> PlayerName -> Player
+newPlayer playerId playerName =
+    Player playerId playerName 0

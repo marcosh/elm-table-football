@@ -1,10 +1,11 @@
 module Team exposing (..)
 
 import Player exposing (..)
+import Uuid exposing (Uuid)
 
 
 type alias TeamId =
-    Int
+    Uuid
 
 
 type alias TeamName =
