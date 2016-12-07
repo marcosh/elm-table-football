@@ -10,7 +10,6 @@ type Event
     | PlayerWasCreated PlayerName PlayerId
     | PlayerWasAddedToTeam Player Team
     | TournamentWasCreated TournamentName Rounds
-    | TeamWasAddedToTournament Team Tournament
     | GameStarted Team Team
     | GoalScored Player
     | GameFinished

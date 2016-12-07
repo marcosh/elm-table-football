@@ -21,13 +21,10 @@ handleCommand command model =
         CreateTeam teamName ->
             generate (TeamWasCreated teamName) uuidGenerator
 
-        CreateTournament tournamentname rounds ->
-            Cmd.none
-
         AddPlayerToTeam player team ->
             Cmd.none
 
-        AddTeamToTournament team tournament ->
+        CreateTournament tournamentname rounds ->
             Cmd.none
 
 
@@ -44,9 +41,6 @@ handleEvent event model =
             model
 
         TournamentWasCreated tournamentName rounds ->
-            model
-
-        TeamWasAddedToTournament team tournament ->
             model
 
         GameStarted team1 team2 ->
@@ -72,9 +66,6 @@ project event model =
             model
 
         TournamentWasCreated tournamentName rounds ->
-            model
-
-        TeamWasAddedToTournament team tournament ->
             model
 
         GameStarted team1 team2 ->

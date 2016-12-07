@@ -8,6 +8,5 @@ import Tournament exposing (..)
 type Command
     = CreatePlayer PlayerName
     | CreateTeam TeamName
-    | CreateTournament TournamentName Rounds
     | AddPlayerToTeam Player Team
-    | AddTeamToTournament Team Tournament
+    | CreateTournament TournamentName Rounds
