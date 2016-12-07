@@ -64,8 +64,11 @@ update msg model =
             let
                 selectedPlayer =
                     case model.selectedPlayer of
-                        Just playerId ->
-                            Nothing
+                        Just id ->
+                            if id == playerId then
+                                Nothing
+                            else
+                                Just playerId
 
                         _ ->
                             Just playerId
@@ -97,8 +100,11 @@ showPlayer selectedPlayer player =
 selectedColor : Maybe Uuid -> Uuid -> Css.Color
 selectedColor selectedId currentId =
     case selectedId of
-        Just currentId ->
-            rgb 237 212 0
+        Just id ->
+            if id == currentId then
+                rgb 237 212 0
+            else
+                rgb 255 255 255
 
         _ ->
             rgb 255 255 255
