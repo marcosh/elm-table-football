@@ -11,6 +11,7 @@ import Events exposing (Event)
 import ReadPlayer as Read exposing (Player)
 import ReadTeam as Read exposing (Team)
 import Player exposing (PlayerId)
+import Team exposing (TeamId)
 import Uuid exposing (Uuid)
 import Css exposing (asPairs, backgroundColor, Color, rgb)
 
@@ -21,12 +22,13 @@ type alias Model =
     , inputPlayer : String
     , inputTeam : String
     , selectedPlayer : Maybe PlayerId
+    , selectedTeam : Maybe TeamId
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model (Write.init) (Read.init) "" "" Nothing, Cmd.none )
+    ( Model (Write.init) (Read.init) "" "" Nothing Nothing, Cmd.none )
 
 
 type Msg
@@ -37,6 +39,7 @@ type Msg
     | TeamInputReceived String
     | CreateTeam
     | PlayerSelected PlayerId
+    | TeamSelected TeamId
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -75,6 +78,21 @@ update msg model =
             in
                 ( { model | selectedPlayer = selectedPlayer }, Cmd.none )
 
+        TeamSelected teamId ->
+            let
+                selectedTeam =
+                    case model.selectedTeam of
+                        Just id ->
+                            if id == teamId then
+                                Nothing
+                            else
+                                Just teamId
+
+                        _ ->
+                            Just teamId
+            in
+                ( { model | selectedTeam = selectedTeam }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -87,7 +105,7 @@ view model =
         , div []
             [ input [ onInput TeamInputReceived, value model.inputTeam ] []
             , button [ onClick CreateTeam ] [ text "Create Team" ]
-            , div [] (List.map showTeam (teams model.readModel))
+            , div [] (List.map (showTeam model.selectedTeam) (teams model.readModel))
             ]
         ]
 
@@ -95,6 +113,11 @@ view model =
 showPlayer : Maybe PlayerId -> Read.Player -> Html Msg
 showPlayer selectedPlayer player =
     div [ onClick (PlayerSelected player.id), style (asPairs [ backgroundColor (selectedColor selectedPlayer player.id) ]) ] [ text player.name ]
+
+
+showTeam : Maybe TeamId -> Read.Team -> Html Msg
+showTeam selectedTeam team =
+    div [ onClick (TeamSelected team.id), style (asPairs [ backgroundColor (selectedColor selectedTeam team.id) ]) ] [ text team.name ]
 
 
 selectedColor : Maybe Uuid -> Uuid -> Css.Color
@@ -108,8 +131,3 @@ selectedColor selectedId currentId =
 
         _ ->
             rgb 255 255 255
-
-
-showTeam : Read.Team -> Html Msg
-showTeam team =
-    div [] [ text team.name ]
