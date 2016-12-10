@@ -22,3 +22,8 @@ type alias Team =
     , player1 : Maybe Player
     , player2 : Maybe Player
     }
+
+
+hasBothPlayers : Team -> Bool
+hasBothPlayers team =
+    team.player1 /= Nothing && team.player2 /= Nothing

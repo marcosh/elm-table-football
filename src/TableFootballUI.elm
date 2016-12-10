@@ -23,31 +23,35 @@ type alias Model =
     , inputTeam : String
     , selectedPlayer : Maybe PlayerId
     , selectedTeam : Maybe TeamId
+    , addPlayerToTeamMessage : String
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model (Write.init) (Read.init) "" "" Nothing Nothing, Cmd.none )
+    ( Model (Write.init) (Read.init) "" "" Nothing Nothing "", Cmd.none )
 
 
 type Msg
-    = AppCommand (Command)
-    | AppEvent (Event)
+    = {- AppCommand (Command)
+         |
+      -}
+      AppEvent (Event)
     | PlayerInputReceived String
     | CreatePlayer
     | TeamInputReceived String
     | CreateTeam
     | PlayerSelected PlayerId
     | TeamSelected TeamId
+    | AddPlayerToTeam
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        AppCommand command ->
-            ( model, Cmd.map AppEvent (handleCommand command model.writeModel) )
-
+        {- AppCommand command ->
+           ( model, Cmd.map AppEvent (handleCommand command model.writeModel) )
+        -}
         AppEvent event ->
             ( { model | writeModel = handleEvent event model.writeModel, readModel = project event model.readModel }, Cmd.none )
 
@@ -93,6 +97,20 @@ update msg model =
             in
                 ( { model | selectedTeam = selectedTeam }, Cmd.none )
 
+        AddPlayerToTeam ->
+            case ( model.selectedPlayer, model.selectedTeam ) of
+                ( Just playerId, Just teamId ) ->
+                    ( { model | selectedPlayer = Nothing, selectedTeam = Nothing }, Cmd.map AppEvent (handleCommand (Commands.AddPlayerToTeam playerId teamId) model.writeModel) )
+
+                ( Just playerId, Nothing ) ->
+                    ( { model | addPlayerToTeamMessage = "Please select a team" }, Cmd.none )
+
+                ( Nothing, Just teamId ) ->
+                    ( { model | addPlayerToTeamMessage = "Please select a player" }, Cmd.none )
+
+                ( Nothing, Nothing ) ->
+                    ( { model | addPlayerToTeamMessage = "Please select a team and a player" }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -106,6 +124,10 @@ view model =
             [ input [ onInput TeamInputReceived, value model.inputTeam ] []
             , button [ onClick CreateTeam ] [ text "Create Team" ]
             , div [] (List.map (showTeam model.selectedTeam) (teams model.readModel))
+            ]
+        , div []
+            [ button [ onClick AddPlayerToTeam ] [ text "Add Player To Team" ]
+            , div [] [ text model.addPlayerToTeamMessage ]
             ]
         ]
 
