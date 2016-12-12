@@ -1,4 +1,4 @@
-module TableFootballApp exposing (handleCommand, handleEvent, project)
+module TableFootballApp exposing (CommandError, handleCommand, handleEvent, project)
 
 import WriteModel as Write exposing (Model)
 import ReadModel as Read exposing (Model)
@@ -12,20 +12,24 @@ import Uuid exposing (uuidGenerator)
 import Random.Pcg exposing (generate)
 
 
-handleCommand : Command -> Write.Model -> Cmd Event
+type alias CommandError =
+    String
+
+
+handleCommand : Command -> Write.Model -> Result CommandError (Cmd Event)
 handleCommand command model =
     case command of
         CreatePlayer playerName ->
-            generate (PlayerWasCreated playerName) uuidGenerator
+            Ok (generate (PlayerWasCreated playerName) uuidGenerator)
 
         CreateTeam teamName ->
-            generate (TeamWasCreated teamName) uuidGenerator
+            Ok (generate (TeamWasCreated teamName) uuidGenerator)
 
         AddPlayerToTeam player team ->
-            Cmd.none
+            Ok Cmd.none
 
         CreateTournament tournamentname rounds ->
-            Cmd.none
+            Ok Cmd.none
 
 
 handleEvent : Event -> Write.Model -> Write.Model

@@ -1,6 +1,6 @@
 module TableFootballUI exposing (..)
 
-import TableFootballApp as App exposing (handleCommand, handleEvent, project)
+import TableFootballApp as App exposing (CommandError, handleCommand, handleEvent, project)
 import WriteModel as Write exposing (Model, init)
 import ReadModel as Read exposing (Model, init, players, teams)
 import Html exposing (Html, div, input, button, text)
@@ -46,6 +46,26 @@ type Msg
     | AddPlayerToTeam
 
 
+domainCommander : Command -> Model -> (CommandError -> Model -> Model) -> ( Model, Cmd Msg )
+domainCommander command model errorHandler =
+    case handleCommand command model.writeModel of
+        Err message ->
+            ( errorHandler message model, Cmd.none )
+
+        Ok cmdEvent ->
+            ( model, Cmd.map AppEvent cmdEvent )
+
+
+noErrorHandling : CommandError -> Model -> Model
+noErrorHandling message model =
+    model
+
+
+addPlayerToTeamMessageHandling : CommandError -> Model -> Model
+addPlayerToTeamMessageHandling message model =
+    { model | addPlayerToTeamMessage = message }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -59,13 +79,13 @@ update msg model =
             ( { model | inputPlayer = input }, Cmd.none )
 
         CreatePlayer ->
-            ( { model | inputPlayer = "" }, Cmd.map AppEvent (handleCommand (Commands.CreatePlayer model.inputPlayer) model.writeModel) )
+            domainCommander (Commands.CreatePlayer model.inputPlayer) { model | inputPlayer = "" } noErrorHandling
 
         TeamInputReceived input ->
             ( { model | inputTeam = input }, Cmd.none )
 
         CreateTeam ->
-            ( { model | inputTeam = "" }, Cmd.map AppEvent (handleCommand (Commands.CreateTeam model.inputTeam) model.writeModel) )
+            domainCommander (Commands.CreateTeam model.inputTeam) { model | inputTeam = "" } noErrorHandling
 
         PlayerSelected playerId ->
             let
@@ -100,7 +120,9 @@ update msg model =
         AddPlayerToTeam ->
             case ( model.selectedPlayer, model.selectedTeam ) of
                 ( Just playerId, Just teamId ) ->
-                    ( { model | selectedPlayer = Nothing, selectedTeam = Nothing }, Cmd.map AppEvent (handleCommand (Commands.AddPlayerToTeam playerId teamId) model.writeModel) )
+                    domainCommander (Commands.AddPlayerToTeam playerId teamId)
+                        { model | selectedPlayer = Nothing, selectedTeam = Nothing }
+                        addPlayerToTeamMessageHandling
 
                 ( Just playerId, Nothing ) ->
                     ( { model | addPlayerToTeamMessage = "Please select a team" }, Cmd.none )
