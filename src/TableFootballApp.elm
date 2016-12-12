@@ -3,7 +3,7 @@ module TableFootballApp exposing (handleCommand, handleEvent, project)
 import WriteModel as Write exposing (Model)
 import ReadModel as Read exposing (Model)
 import Player as Write exposing (Player)
-import Team as Write exposing (Team)
+import Team as Write exposing (Team, createTeam)
 import ReadPlayer as Read exposing (Player, newPlayer)
 import ReadTeam as Read exposing (Team, newTeam)
 import Commands exposing (Command(..))
@@ -32,7 +32,7 @@ handleEvent : Event -> Write.Model -> Write.Model
 handleEvent event model =
     case event of
         TeamWasCreated teamName teamId ->
-            { model | teams = (Write.Team teamId teamName Nothing Nothing) :: model.teams }
+            { model | teams = (createTeam teamId teamName) :: model.teams }
 
         PlayerWasCreated playerName playerId ->
             { model | players = (Write.Player playerId playerName) :: model.players }
