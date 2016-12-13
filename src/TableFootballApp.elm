@@ -3,13 +3,14 @@ module TableFootballApp exposing (CommandError, handleCommand, handleEvent, proj
 import WriteModel as Write exposing (Model)
 import ReadModel as Read exposing (Model)
 import Player as Write exposing (Player)
-import Team as Write exposing (Team, createTeam)
+import Team as Write exposing (Team, createTeam, hasBothPlayers)
 import ReadPlayer as Read exposing (Player, newPlayer)
 import ReadTeam as Read exposing (Team, newTeam)
 import Commands exposing (Command(..))
 import Events exposing (Event(..))
 import Uuid exposing (uuidGenerator)
 import Random.Pcg exposing (generate)
+import Task exposing (perform, succeed)
 
 
 type alias CommandError =
@@ -26,7 +27,10 @@ handleCommand command model =
             Ok (generate (TeamWasCreated teamName) uuidGenerator)
 
         AddPlayerToTeam player team ->
-            Ok Cmd.none
+            if hasBothPlayers team then
+                Err "The team has already two players"
+            else
+                Ok (perform (\a -> a) (succeed (PlayerWasAddedToTeam player team)))
 
         CreateTournament tournamentname rounds ->
             Ok Cmd.none
