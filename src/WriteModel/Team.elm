@@ -42,3 +42,16 @@ hasBothPlayers team =
 createTeam : TeamId -> TeamName -> Team
 createTeam teamId teamName =
     Team teamId teamName NoPlayers
+
+
+addPlayer : Team -> PlayerId -> Result String Team
+addPlayer team playerId =
+    case team.players of
+        NoPlayers ->
+            Ok { team | players = OnePlayer playerId }
+
+        OnePlayer existingPlayerId ->
+            Ok { team | players = TwoPlayers existingPlayerId playerId }
+
+        TwoPlayers player1 player2 ->
+            Err "It's not possible to add a player to a team which has already two players"

@@ -7,9 +7,17 @@ import AllDict exposing (AllDict, empty, get)
 import Uuid exposing (toString)
 
 
+type alias Players =
+    AllDict PlayerId Player String
+
+
+type alias Teams =
+    AllDict TeamId Team String
+
+
 type alias Model =
-    { players : AllDict PlayerId Player String
-    , teams : AllDict TeamId Team String
+    { players : Players
+    , teams : Teams
     , tournament : Maybe Tournament
     }
 
@@ -19,11 +27,11 @@ init =
     Model (empty Uuid.toString) (empty Uuid.toString) Nothing
 
 
-getPlayer : PlayerId -> Model -> Maybe Player
-getPlayer playerId model =
-    get playerId model.players
+getPlayer : PlayerId -> Players -> Maybe Player
+getPlayer playerId players =
+    get playerId players
 
 
-getTeam : TeamId -> Model -> Maybe Team
-getTeam teamId model =
-    get teamId model.teams
+getTeam : TeamId -> Teams -> Maybe Team
+getTeam teamId teams =
+    get teamId teams
