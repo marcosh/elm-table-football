@@ -8,3 +8,10 @@ A sample application to test an explicit ddd/es/cqrs approach in ELM
 - make property based testing part of the domain (invariants)
 
 - cqrs -> a single model is not appropriate to answer all our needs
+
+- create a type also for the error messages
+
+## TODO
+
+- think about how to handle the possibility of the event PlayerAddedToTeam being invalid
+- move domain login inside aggregates
