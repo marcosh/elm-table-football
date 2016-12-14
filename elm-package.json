@@ -6,7 +6,8 @@
     "source-directories": [
         "src",
         "src/WriteModel",
-        "src/ReadModel"
+        "src/ReadModel",
+        "src/Package"
     ],
     "exposed-modules": [],
     "dependencies": {
