@@ -14,6 +14,7 @@ import Player exposing (PlayerId)
 import Team exposing (TeamId)
 import Uuid exposing (Uuid)
 import Css exposing (asPairs, backgroundColor, Color, rgb)
+import AllDict exposing (values)
 
 
 type alias Model =
@@ -140,12 +141,12 @@ view model =
         [ div []
             [ input [ onInput PlayerInputReceived, value model.inputPlayer ] []
             , button [ onClick CreatePlayer ] [ text "Create Player" ]
-            , div [] (List.map (showPlayer model.selectedPlayer) (players model.readModel))
+            , div [] (List.map (showPlayer model.selectedPlayer) (AllDict.values (players model.readModel)))
             ]
         , div []
             [ input [ onInput TeamInputReceived, value model.inputTeam ] []
             , button [ onClick CreateTeam ] [ text "Create Team" ]
-            , div [] (List.map (showTeam model.selectedTeam) (teams model.readModel))
+            , div [] (List.map (showTeam model.selectedTeam) (AllDict.values (teams model.readModel)))
             ]
         , div []
             [ button [ onClick AddPlayerToTeam ] [ text "Add Player To Team" ]

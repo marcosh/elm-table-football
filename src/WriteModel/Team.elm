@@ -39,19 +39,35 @@ hasBothPlayers team =
             False
 
 
+containsPlayer : Team -> PlayerId -> Bool
+containsPlayer team playerId =
+    case team.players of
+        NoPlayers ->
+            False
+
+        OnePlayer existingPlayerId ->
+            playerId == existingPlayerId
+
+        TwoPlayers player1 player2 ->
+            playerId == player1 || playerId == player2
+
+
 createTeam : TeamId -> TeamName -> Team
 createTeam teamId teamName =
     Team teamId teamName NoPlayers
 
 
-addPlayer : Team -> PlayerId -> Result String Team
+addPlayer : Team -> PlayerId -> Team
 addPlayer team playerId =
     case team.players of
         NoPlayers ->
-            Ok { team | players = OnePlayer playerId }
+            { team | players = OnePlayer playerId }
 
         OnePlayer existingPlayerId ->
-            Ok { team | players = TwoPlayers existingPlayerId playerId }
+            if existingPlayerId == playerId then
+                team
+            else
+                { team | players = TwoPlayers existingPlayerId playerId }
 
         TwoPlayers player1 player2 ->
-            Err "It's not possible to add a player to a team which has already two players"
+            team
