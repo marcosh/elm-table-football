@@ -29,6 +29,11 @@ type alias Team =
     }
 
 
+id : Team -> TeamId
+id team =
+    team.id
+
+
 hasBothPlayers : Team -> Bool
 hasBothPlayers team =
     case team.players of
@@ -57,8 +62,8 @@ createTeam teamId teamName =
     Team teamId teamName NoPlayers
 
 
-addPlayer : Team -> PlayerId -> Team
-addPlayer team playerId =
+whenPlayerAdded : Team -> PlayerId -> Team
+whenPlayerAdded team playerId =
     case team.players of
         NoPlayers ->
             { team | players = OnePlayer playerId }

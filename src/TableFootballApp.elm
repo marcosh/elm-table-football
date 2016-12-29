@@ -1,22 +1,19 @@
-module TableFootballApp exposing (CommandError, handleCommand, handleEvent, project)
+module TableFootballApp exposing (handleCommand, handleEvent, project)
 
 import WriteModel as Write exposing (Model, getTeam)
 import ReadModel as Read exposing (Model, Players)
 import Player as Write exposing (Player, PlayerId)
-import Team as Write exposing (Team, createTeam, hasBothPlayers, containsPlayer, addPlayer)
+import Team as Write exposing (Team, createTeam, hasBothPlayers, containsPlayer, whenPlayerAdded)
+import TeamCommandHandlers exposing (addPlayer)
 import ReadPlayer as Read exposing (Player, newPlayer)
-import ReadTeam as Read exposing (Team, newTeam, addPlayer)
+import ReadTeam as Read exposing (Team, newTeam, whenPlayerAdded)
 import Commands exposing (Command(..))
 import Events exposing (Event(..))
+import CommandError exposing (CommandError)
 import Uuid exposing (uuidGenerator)
 import Random.Pcg exposing (generate)
-import Task exposing (perform, succeed)
 import AllDict exposing (insert, update)
 import Result exposing (toMaybe)
-
-
-type alias CommandError =
-    String
 
 
 handleCommand : Command -> Write.Model -> Result CommandError (Cmd Event)
@@ -38,25 +35,20 @@ handleCommand command model =
                         Err "I am not able to retrieve the selected Team"
 
                     Just team ->
-                        if hasBothPlayers team then
-                            Err "The team has already two players"
-                        else if containsPlayer team playerId then
-                            Err "The player is already in the team"
-                        else
-                            Ok (perform (\a -> a) (succeed (PlayerWasAddedToTeam playerId teamId)))
+                        addPlayer team playerId
 
         CreateTournament tournamentname rounds ->
             Ok Cmd.none
 
 
-addPlayerToTeam : PlayerId -> Maybe Write.Team -> Maybe Write.Team
-addPlayerToTeam playerId maybeTeam =
+whenPlayerAddedToTeam : PlayerId -> Maybe Write.Team -> Maybe Write.Team
+whenPlayerAddedToTeam playerId maybeTeam =
     case maybeTeam of
         Nothing ->
             Nothing
 
         Just team ->
-            Just (Write.addPlayer team playerId)
+            Just (Write.whenPlayerAdded team playerId)
 
 
 handleEvent : Event -> Write.Model -> Write.Model
@@ -69,7 +61,7 @@ handleEvent event model =
             { model | teams = insert teamId (createTeam teamId teamName) model.teams }
 
         PlayerWasAddedToTeam playerId teamId ->
-            { model | teams = update teamId (addPlayerToTeam playerId) model.teams }
+            { model | teams = update teamId (whenPlayerAddedToTeam playerId) model.teams }
 
         TournamentWasCreated tournamentName rounds ->
             model
@@ -91,7 +83,7 @@ addPlayerToReadTeam player maybeTeam =
             Nothing
 
         Just team ->
-            Just (Read.addPlayer team player)
+            Just (Read.whenPlayerAdded team player)
 
 
 project : Event -> Read.Model -> Read.Model

@@ -1,6 +1,7 @@
 module TableFootballUI exposing (..)
 
-import TableFootballApp as App exposing (CommandError, handleCommand, handleEvent, project)
+import TableFootballApp as App exposing (handleCommand, handleEvent, project)
+import CommandError exposing (CommandError)
 import WriteModel as Write exposing (Model, init)
 import ReadModel as Read exposing (Model, init, players, teams)
 import Html exposing (Html, div, input, button, text)
