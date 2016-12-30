@@ -10,3 +10,7 @@ A sample application to test an explicit ddd/es/cqrs approach in ELM
 - cqrs -> a single model is not appropriate to answer all our needs
 
 - create a type also for the error messages
+
+## TODO
+
+- avoid adding a player to multiple teams

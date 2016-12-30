@@ -4,14 +4,16 @@ import Team exposing (TeamId, TeamName)
 import ReadPlayer exposing (Player)
 
 
--- here we are sloppy with the modelling, since we need this only to display things
+type Players
+    = NoPlayers
+    | OnePlayer Player
+    | TwoPlayers Player Player
 
 
 type alias Team =
     { id : TeamId
     , name : TeamName
-    , player1 : Maybe Player
-    , player2 : Maybe Player
+    , players : Players
     , goalsScored : Int
     , goalsConceded : Int
     , gamesWon : Int
@@ -21,22 +23,33 @@ type alias Team =
 
 newTeam : TeamId -> TeamName -> Team
 newTeam id name =
-    Team id name Nothing Nothing 0 0 0 0
+    Team id name NoPlayers 0 0 0 0
 
 
 whenPlayerAdded : Team -> Player -> Team
 whenPlayerAdded team player =
-    case team.player1 of
-        Nothing ->
-            { team | player1 = Just player }
+    case team.players of
+        NoPlayers ->
+            { team | players = OnePlayer player }
 
-        Just player1 ->
-            if player1 == player then
+        OnePlayer player1 ->
+            if player == player1 then
                 team
             else
-                case team.player2 of
-                    Nothing ->
-                        { team | player2 = Just player }
+                { team | players = TwoPlayers player1 player }
 
-                    Just player2 ->
-                        team
+        TwoPlayers player1 player2 ->
+            team
+
+
+teamPlayers : Team -> List Player
+teamPlayers team =
+    case team.players of
+        NoPlayers ->
+            []
+
+        OnePlayer player1 ->
+            [ player1 ]
+
+        TwoPlayers player1 player2 ->
+            [ player1, player2 ]

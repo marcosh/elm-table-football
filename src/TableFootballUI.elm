@@ -10,7 +10,7 @@ import Html.Attributes exposing (value, style)
 import Commands exposing (Command)
 import Events exposing (Event)
 import ReadPlayer as Read exposing (Player)
-import ReadTeam as Read exposing (Team)
+import ReadTeam as Read exposing (Team, teamPlayers)
 import Player exposing (PlayerId)
 import Team exposing (TeamId)
 import Uuid exposing (Uuid)
@@ -163,7 +163,18 @@ showPlayer selectedPlayer player =
 
 showTeam : Maybe TeamId -> Read.Team -> Html Msg
 showTeam selectedTeam team =
-    div [ onClick (TeamSelected team.id), style (asPairs [ backgroundColor (selectedColor selectedTeam team.id) ]) ] [ text team.name ]
+    div [ onClick (TeamSelected team.id), style (asPairs [ backgroundColor (selectedColor selectedTeam team.id) ]) ]
+        [ text team.name
+        , showTeamPlayers team
+        ]
+
+
+showTeamPlayers : Read.Team -> Html Msg
+showTeamPlayers team =
+    div []
+        (List.map (\player -> div [] [ text player.name ])
+            (teamPlayers team)
+        )
 
 
 selectedColor : Maybe Uuid -> Uuid -> Css.Color
