@@ -2,9 +2,8 @@ module TableFootballUI exposing (..)
 
 import TableFootballApp as App exposing (handleCommand, handleEvent, project)
 import CommandError exposing (CommandError)
-import Model as Model exposing (Model)
-import WriteModel as Write exposing (Model, init)
-import ReadModel as Read exposing (Model, init, players, teams)
+import Model as Domain exposing (Model, init, writeModel, readModel)
+import ReadModel as Read exposing (Model, players, teams)
 import Html exposing (Html, div, input, button, text)
 import Html.Events exposing (onInput, onClick)
 import Html.Attributes exposing (value, style)
@@ -20,7 +19,7 @@ import AllDict exposing (values)
 
 
 type alias Model =
-    { model : Model.Model
+    { domainModel : Domain.Model
     , inputPlayer : String
     , inputTeam : String
     , selectedPlayer : Maybe PlayerId
@@ -31,7 +30,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model (Write.init) (Read.init) "" "" Nothing Nothing "", Cmd.none )
+    ( Model (Domain.init) "" "" Nothing Nothing "", Cmd.none )
 
 
 type Msg
@@ -50,7 +49,7 @@ type Msg
 
 domainCommander : Command -> Model -> (CommandError -> Model -> Model) -> ( Model, Cmd Msg )
 domainCommander command model errorHandler =
-    case handleCommand command model.writeModel of
+    case handleCommand command model.domainModel of
         Err message ->
             ( errorHandler message model, Cmd.none )
 
@@ -75,7 +74,7 @@ update msg model =
            ( model, Cmd.map AppEvent (handleCommand command model.writeModel) )
         -}
         AppEvent event ->
-            ( { model | writeModel = handleEvent event model.writeModel, readModel = project event model.readModel }, Cmd.none )
+            ( { model | domainModel = Domain.Model (handleEvent event (writeModel model.domainModel)) (project event (readModel model.domainModel)) }, Cmd.none )
 
         PlayerInputReceived input ->
             ( { model | inputPlayer = input }, Cmd.none )
@@ -142,12 +141,12 @@ view model =
         [ div []
             [ input [ onInput PlayerInputReceived, value model.inputPlayer ] []
             , button [ onClick CreatePlayer ] [ text "Create Player" ]
-            , div [] (List.map (showPlayer model.selectedPlayer) (AllDict.values (players model.readModel)))
+            , div [] (List.map (showPlayer model.selectedPlayer) (AllDict.values (players (readModel model.domainModel))))
             ]
         , div []
             [ input [ onInput TeamInputReceived, value model.inputTeam ] []
             , button [ onClick CreateTeam ] [ text "Create Team" ]
-            , div [] (List.map (showTeam model.selectedTeam) (AllDict.values (teams model.readModel)))
+            , div [] (List.map (showTeam model.selectedTeam) (AllDict.values (teams (readModel model.domainModel))))
             ]
         , div []
             [ button [ onClick AddPlayerToTeam ] [ text "Add Player To Team" ]
