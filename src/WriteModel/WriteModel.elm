@@ -22,6 +22,16 @@ type alias Model =
     }
 
 
+players : Model -> Players
+players model =
+    model.players
+
+
+teams : Model -> Teams
+teams model =
+    model.teams
+
+
 init : Model
 init =
     Model (empty Uuid.toString) (empty Uuid.toString) Nothing

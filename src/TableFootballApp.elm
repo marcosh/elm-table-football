@@ -1,7 +1,8 @@
 module TableFootballApp exposing (handleCommand, handleEvent, project)
 
-import WriteModel as Write exposing (Model, getTeam)
-import ReadModel as Read exposing (Model, Players)
+import Model exposing (Model)
+import WriteModel as Write exposing (Model, teams, getTeam)
+import ReadModel as Read exposing (Model, Players, playerIsInTeam)
 import Player as Write exposing (Player, PlayerId)
 import Team as Write exposing (Team, createTeam, hasBothPlayers, containsPlayer, whenPlayerAdded)
 import TeamCommandHandlers exposing (addPlayer)
@@ -16,7 +17,7 @@ import AllDict exposing (insert, update)
 import Result exposing (toMaybe)
 
 
-handleCommand : Command -> Write.Model -> Result CommandError (Cmd Event)
+handleCommand : Command -> Model.Model -> Result CommandError (Cmd Event)
 handleCommand command model =
     case command of
         CreatePlayer playerName ->
@@ -28,14 +29,14 @@ handleCommand command model =
         AddPlayerToTeam playerId teamId ->
             let
                 maybeTeam =
-                    getTeam teamId model.teams
+                    getTeam teamId (teams model.writeModel)
             in
                 case maybeTeam of
                     Nothing ->
                         Err "I am not able to retrieve the selected Team"
 
                     Just team ->
-                        addPlayer team playerId
+                        addPlayer team playerId (playerIsInTeam model.readModel)
 
         CreateTournament tournamentname rounds ->
             Ok Cmd.none

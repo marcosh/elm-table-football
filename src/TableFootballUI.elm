@@ -2,6 +2,7 @@ module TableFootballUI exposing (..)
 
 import TableFootballApp as App exposing (handleCommand, handleEvent, project)
 import CommandError exposing (CommandError)
+import Model as Model exposing (Model)
 import WriteModel as Write exposing (Model, init)
 import ReadModel as Read exposing (Model, init, players, teams)
 import Html exposing (Html, div, input, button, text)
@@ -19,8 +20,7 @@ import AllDict exposing (values)
 
 
 type alias Model =
-    { writeModel : Write.Model
-    , readModel : Read.Model
+    { model : Model.Model
     , inputPlayer : String
     , inputTeam : String
     , selectedPlayer : Maybe PlayerId

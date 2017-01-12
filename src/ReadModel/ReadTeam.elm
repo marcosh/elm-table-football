@@ -53,3 +53,16 @@ teamPlayers team =
 
         TwoPlayers player1 player2 ->
             [ player1, player2 ]
+
+
+isPlayerInTeam : Player -> Team -> Bool
+isPlayerInTeam player team =
+    case team.players of
+        NoPlayers ->
+            False
+
+        OnePlayer player1 ->
+            player1 == player
+
+        TwoPlayers player1 player2 ->
+            player1 == player || player2 == player
