@@ -26,8 +26,8 @@ newTeam id name =
     Team id name NoPlayers 0 0 0 0
 
 
-whenPlayerAdded : Team -> Player -> Team
-whenPlayerAdded team player =
+whenPlayerAdded : Player -> Team -> Team
+whenPlayerAdded player team =
     case team.players of
         NoPlayers ->
             { team | players = OnePlayer player }

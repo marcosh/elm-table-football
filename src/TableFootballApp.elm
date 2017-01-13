@@ -4,9 +4,9 @@ import Model exposing (Model)
 import WriteModel as Write exposing (Model, teams, getTeam)
 import ReadModel as Read exposing (Model, Players, playerIsInTeam)
 import Player as Write exposing (Player, PlayerId)
-import Team as Write exposing (Team, createTeam, hasBothPlayers, containsPlayer, whenPlayerAdded)
+import Team as Write exposing (Team, TeamId, createTeam, hasBothPlayers, containsPlayer, whenPlayerAdded)
 import TeamCommandHandlers exposing (addPlayer)
-import ReadPlayer as Read exposing (Player, newPlayer)
+import ReadPlayer as Read exposing (Player, newPlayer, whenTeamAdded)
 import ReadTeam as Read exposing (Team, newTeam, whenPlayerAdded)
 import Commands exposing (Command(..))
 import Events exposing (Event(..))
@@ -79,12 +79,12 @@ handleEvent event model =
 
 addPlayerToReadTeam : Read.Player -> Maybe Read.Team -> Maybe Read.Team
 addPlayerToReadTeam player maybeTeam =
-    case maybeTeam of
-        Nothing ->
-            Nothing
+    Maybe.map (\team -> Read.whenPlayerAdded player team) maybeTeam
 
-        Just team ->
-            Just (Read.whenPlayerAdded team player)
+
+addTeamToReadPlayer : TeamId -> Maybe Read.Player -> Maybe Read.Player
+addTeamToReadPlayer teamId maybePlayer =
+    Maybe.map (\player -> Read.whenTeamAdded teamId player) maybePlayer
 
 
 project : Event -> Read.Model -> Read.Model
@@ -106,7 +106,10 @@ project event model =
                         model
 
                     Just player ->
-                        { model | teams = update teamId (addPlayerToReadTeam player) model.teams }
+                        { model
+                            | teams = update teamId (addPlayerToReadTeam (Read.whenTeamAdded teamId player)) model.teams
+                            , players = update playerId (addTeamToReadPlayer teamId) model.players
+                        }
 
         TournamentWasCreated tournamentName rounds ->
             model
