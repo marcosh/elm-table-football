@@ -4,7 +4,7 @@ import TableFootballApp as App exposing (handleCommand, handleEvent, project)
 import CommandError exposing (CommandError)
 import Model as Domain exposing (Model, init, writeModel, readModel)
 import ReadModel as Read exposing (Model, players, teams)
-import Html exposing (Html, div, input, button, text)
+import Html exposing (Html, Attribute, div, input, button, text)
 import Html.Events exposing (onInput, onClick)
 import Html.Attributes exposing (value, style)
 import Commands exposing (Command)
@@ -157,7 +157,12 @@ view model =
 
 showPlayer : Maybe PlayerId -> Read.Player -> Html Msg
 showPlayer selectedPlayer player =
-    div [ onClick (PlayerSelected player.id), style (asPairs [ backgroundColor (selectedColor selectedPlayer player.id) ]) ] [ text player.name ]
+    div [ onClick (PlayerSelected player.id), playerStyle selectedPlayer player ] [ text player.name ]
+
+
+playerStyle : Maybe PlayerId -> Read.Player -> Attribute Msg
+playerStyle selectedPlayer player =
+    style (asPairs [ backgroundColor (selectedColor selectedPlayer player.id) ])
 
 
 showTeam : Maybe TeamId -> Read.Team -> Html Msg
